@@ -9,7 +9,9 @@
 ![WRRC image](/assets/img/WRRC.jpg)
 
 ## Overview
-The client send HTTP request to the server containing the specifications of the resource the client is asking for,These responses contain a status code and if the request was successful.
+
+The client send HTTP request to the server containing the specifications of the resource the client is asking for,These responses contain a status code and if the request was successful, The user can communicated through the request method. Four of the most common request methods are GET, POST, PUT, and DELTE,Then HTTP response is what is sent by a server to a client in response to an HTTP request. These responses contain a status code and if the request was successful,Finally Once the client receives the HTTP response, the browser will render the HTTP response body message.
+
 ## Getting Started
 
 1. Create server.js file
