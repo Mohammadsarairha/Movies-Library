@@ -38,3 +38,6 @@ The client send HTTP request to the server containing the specifications of the 
 
 - Show all details about movies .
 
+## Request response cycle for movies project
+
+![Request response cycle image](/assets/img/request_response_cycle.jpg)
