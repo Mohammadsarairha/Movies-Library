@@ -8,13 +8,21 @@ const dotenv = require("dotenv");
 
 const axios = require("axios");
 
+const pg = require("pg");
+
 dotenv.config();
 
 const app = express();
 
+app.use(express.json());
+
 const APIKEY = process.env.APIKEY;
 const PORT = process.env.PORT;
+const DATABASE_URL = process.env.DATABASE_URL;
 
+
+
+const clinte = new pg.Client(DATABASE_URL);
 
 function movieData(id, title, poster_path, overview) {
     this.id = id;
@@ -57,6 +65,39 @@ function trendinPageHandler(request, response) {
         })
 };
 
+
+app.post("/addMovie", addMovieHandler);
+
+
+function addMovieHandler(request, response) {
+    const movie = request.body;
+
+    const sql = `INSERT INTO favmovie(title,poster_path,overview) VALUES ($1, $2, $3) RETURNING *`
+    const values = [movie.title, movie.poster_path, movie.overview];
+    clinte.query(sql, values).then((result) => {
+        response.status(201).json(result.rows);
+    }).catch((error) => {
+        errorHandler(error, request, response);
+    });
+};
+
+
+app.get("/getMovies", getMoviesHandler);
+
+function getMoviesHandler(request, response) {
+
+    const sql = `SELECT * FROM favMovie `;
+
+    clinte.query(sql).then((result) => {
+        return response.status(200).json(result.rows);
+    }).catch((error) => {
+        errorHandler(error, request, response);
+        console.log(error);
+    });
+
+};
+
+
 function errorHandler(error, request, response) {
     const err = {
         status: 500,
@@ -71,6 +112,11 @@ function notFoundHandler(request, response) {
     return response.status(404).send("Not Found");
 }
 
-app.listen(PORT, () => {
-    console.log(`Listen on ${PORT}`);
-});
+
+clinte.connect()
+    .then(() => {
+        app.listen(PORT, () => {
+            console.log(`Listen on ${PORT}`);
+        });
+    });
+
