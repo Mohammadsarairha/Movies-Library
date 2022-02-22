@@ -41,3 +41,7 @@ The client send HTTP request to the server containing the specifications of the 
 ## Request response cycle for movies project
 
 ![Request response cycle image](/assets/img/request_response_cycle.jpg)
+
+## WRRC (POST & GET) Data from database
+
+![Request response cycle image](/assets/img/WRRC(GET,POST).jpg)
