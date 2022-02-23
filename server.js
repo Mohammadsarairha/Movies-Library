@@ -9,6 +9,7 @@ const dotenv = require("dotenv");
 const axios = require("axios");
 
 const pg = require("pg");
+const req = require("express/lib/request");
 
 dotenv.config();
 
@@ -97,6 +98,55 @@ function getMoviesHandler(request, response) {
 
 };
 
+//Request to update your comments for a specific movie in the database.
+app.put("/UPDATE/:id", updateMovieHandler);
+
+function updateMovieHandler(request, response) {
+    const id = request.params.id;
+    const movie = request.body;
+
+    const sql = `UPDATE favmovie SET title=$1 ,poster_path=$2, overview=$3 WHERE id= $4 RETURNING *; `;
+    const values = [movie.title, movie.poster_path, movie.overview, id];
+
+    clinte.query(sql, values).then((result) => {
+        return response.status(200).json(result.rows);
+    }).catch((error) => {
+        errorHandler(error, request, response);
+    });
+};
+
+//Request to remove a specific movie from your database.
+
+app.delete("/DELETE/:id", deleteMovieHandler);
+
+function deleteMovieHandler(request, response) {
+    const id = request.params.id;
+    const sql = `DELETE FROM favmovie WHERE id=$1`;
+    const values = [id];
+    clinte.query(sql, values).then(() => {
+        return response.status(204).json({});
+    }).catch((error) => {
+        errorHandler(error, request, response);
+    });
+};
+
+// Request to get a specific movie from the database
+
+app.get("/getMovie/:id", getMovie);
+
+function getMovie(request, response) {
+    const id = request.params.id;
+
+    const sql = `SELECT * FROM favmovie WHERE id=$1 ;`;
+    const value = [id];
+
+    clinte.query(sql, value).then((result) => {
+        return response.status(200).json(result.rows);
+    }).catch((error) => {
+        errorHandler(error, request, response);
+        console.log(error);
+    });
+};
 
 function errorHandler(error, request, response) {
     const err = {
@@ -104,7 +154,7 @@ function errorHandler(error, request, response) {
         message: error
     }
     return response.status(500).send(err);
-}
+};
 
 app.use("*", notFoundHandler);
 
