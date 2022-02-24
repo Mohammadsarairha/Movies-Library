@@ -23,7 +23,11 @@ const DATABASE_URL = process.env.DATABASE_URL;
 
 
 
-const clinte = new pg.Client(DATABASE_URL);
+//const client = new pg.Client(DATABASE_URL);
+const client = new pg.Client({
+    connectionString: process.env.DATABASE_URL,
+    ssl: { rejectUnauthorized: false }
+});
 
 function movieData(id, title, poster_path, overview) {
     this.id = id;
@@ -75,7 +79,7 @@ function addMovieHandler(request, response) {
 
     const sql = `INSERT INTO favmovie(title,poster_path,overview) VALUES ($1, $2, $3) RETURNING *`
     const values = [movie.title, movie.poster_path, movie.overview];
-    clinte.query(sql, values).then((result) => {
+    client.query(sql, values).then((result) => {
         response.status(201).json(result.rows);
     }).catch((error) => {
         errorHandler(error, request, response);
@@ -89,7 +93,7 @@ function getMoviesHandler(request, response) {
 
     const sql = `SELECT * FROM favMovie `;
 
-    clinte.query(sql).then((result) => {
+    client.query(sql).then((result) => {
         return response.status(200).json(result.rows);
     }).catch((error) => {
         errorHandler(error, request, response);
@@ -108,7 +112,7 @@ function updateMovieHandler(request, response) {
     const sql = `UPDATE favmovie SET title=$1 ,poster_path=$2, overview=$3 WHERE id= $4 RETURNING *; `;
     const values = [movie.title, movie.poster_path, movie.overview, id];
 
-    clinte.query(sql, values).then((result) => {
+    client.query(sql, values).then((result) => {
         return response.status(200).json(result.rows);
     }).catch((error) => {
         errorHandler(error, request, response);
@@ -123,7 +127,7 @@ function deleteMovieHandler(request, response) {
     const id = request.params.id;
     const sql = `DELETE FROM favmovie WHERE id=$1`;
     const values = [id];
-    clinte.query(sql, values).then(() => {
+    client.query(sql, values).then(() => {
         return response.status(204).json({});
     }).catch((error) => {
         errorHandler(error, request, response);
@@ -140,7 +144,7 @@ function getMovie(request, response) {
     const sql = `SELECT * FROM favmovie WHERE id=$1 ;`;
     const value = [id];
 
-    clinte.query(sql, value).then((result) => {
+    client.query(sql, value).then((result) => {
         return response.status(200).json(result.rows);
     }).catch((error) => {
         errorHandler(error, request, response);
@@ -162,7 +166,7 @@ function notFoundHandler(request, response) {
     return response.status(404).send("Not Found");
 }
 
-clinte.connect()
+client.connect()
     .then(() => {
         app.listen(PORT, () => {
             console.log(`Listen on ${PORT}`);
