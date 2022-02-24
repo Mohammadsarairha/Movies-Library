@@ -1,0 +1,51 @@
+\l
+\q
+\s
+CREATE DATABASE Movies;
+/l
+\l
+\q
+\c
+\c movies
+\d
+\q
+\c
+\c movies
+\c a
+\c movies\
+\c movies
+\q
+\c movies
+\d
+\q
+\c movies
+\d
+\q
+select * from favmovie
+\c movies
+\d
+\d
+\d
+\q
+\q
+\q
+\c
+\c movies
+\d
+\q
+\q
+q
+qsql
+help
+\qsql
+/q
+\q
+/l
+\l
+CREATE DATABASE favMovie
+\l
+CREATE DATABASE Movies
+\l
+\s movies
+\s movies
+\s movies

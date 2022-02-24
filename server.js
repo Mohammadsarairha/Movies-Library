@@ -24,23 +24,26 @@ const DATABASE_URL = process.env.DATABASE_URL;
 
 
 //const client = new pg.Client(DATABASE_URL);
+
 const client = new pg.Client({
     connectionString: process.env.DATABASE_URL,
     ssl: { rejectUnauthorized: false }
 });
 
-function movieData(id, title, poster_path, overview) {
+function movieData(id, title, release_date, poster_path, overview, comment) {
     this.id = id;
     this.title = title;
+    this.release_date = release_date;
     this.poster_path = poster_path;
     this.overview = overview;
+    this.comment = comment;
 };
 
 app.get('/', indexPagedHandler);
 
 function indexPagedHandler(request, response) {
 
-    let newMovieData = new movieData(movies.title, movies.poster_path, movies.overview);
+    let newMovieData = new movieData(movies.title, movies.release_date, movies.poster_path, movies.overview);
 
     return response.status(200).json(newMovieData);
 };
@@ -61,7 +64,7 @@ function trendinPageHandler(request, response) {
     axios.get(`https://api.themoviedb.org/3/trending/all/week?api_key=${APIKEY}&language=en-US`)
         .then(apiResponse => {
             apiResponse.data.results.map(value => {
-                let trendMovie = new movieData(value.id, value.title, value.poster_path, value.overview);
+                let trendMovie = new movieData(value.id, value.title, value.release_date, value.poster_path, value.overview);
                 result.push(trendMovie);
             })
             return response.status(200).json(result);
@@ -77,8 +80,8 @@ app.post("/addMovie", addMovieHandler);
 function addMovieHandler(request, response) {
     const movie = request.body;
 
-    const sql = `INSERT INTO favmovie(title,poster_path,overview) VALUES ($1, $2, $3) RETURNING *`
-    const values = [movie.title, movie.poster_path, movie.overview];
+    const sql = `INSERT INTO favmovie(title,release_date,poster_path,overview,comment) VALUES ($1, $2, $3,$4,$5) RETURNING *`
+    const values = [movie.title, movie.release_date, movie.poster_path, movie.overview, movie.comment];
     client.query(sql, values).then((result) => {
         response.status(201).json(result.rows);
     }).catch((error) => {
@@ -108,8 +111,8 @@ function updateMovieHandler(request, response) {
     const id = request.params.id;
     const movie = request.body;
 
-    const sql = `UPDATE favmovie SET title=$1 ,poster_path=$2, overview=$3 WHERE id= $4 RETURNING *; `;
-    const values = [movie.title, movie.poster_path, movie.overview, id];
+    const sql = `UPDATE favmovie SET title=$1 ,release_date =$2,poster_path=$3, overview=$4,comment=$5 WHERE id= $6 RETURNING *; `;
+    const values = [movie.title, movie.release_date, movie.poster_path, movie.overview, movie.comment, id];
 
     client.query(sql, values).then((result) => {
         return response.status(200).json(result.rows);
