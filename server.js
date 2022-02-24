@@ -162,7 +162,6 @@ function notFoundHandler(request, response) {
     return response.status(404).send("Not Found");
 }
 
-
 clinte.connect()
     .then(() => {
         app.listen(PORT, () => {
