@@ -93,7 +93,6 @@ function getMoviesHandler(request, response) {
         return response.status(200).json(result.rows);
     }).catch((error) => {
         errorHandler(error, request, response);
-        console.log(error);
     });
 
 };
