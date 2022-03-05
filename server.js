@@ -2,6 +2,8 @@
 
 const express = require("express");
 
+const cors = require('cors');
+
 const movies = require("./movieData/data.json");
 
 const dotenv = require("dotenv");
@@ -14,6 +16,8 @@ const req = require("express/lib/request");
 dotenv.config();
 
 const app = express();
+
+app.use(cors());
 
 app.use(express.json());
 
@@ -44,7 +48,7 @@ app.get('/', indexPagedHandler);
 function indexPagedHandler(request, response) {
 
     let newMovieData = new movieData(movies.title, movies.release_date, movies.poster_path, movies.overview);
-
+    console.log(request);
     return response.status(200).json(newMovieData);
 };
 
